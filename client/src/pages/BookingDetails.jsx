@@ -6,6 +6,8 @@ import Price from "../components/Price";
 import UserBookingDetails from "../components/UserBookingDetails";
 import { AuthContext } from "../context/AuthContext";
 import useFetch from "../hooks/useFetch";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BookingDetails = () => {
   const navigate = useNavigate();
@@ -13,6 +15,21 @@ const BookingDetails = () => {
   const id = location.pathname.split("/")[2];
   const { data } = useFetch(`/bookings/${id}`);
   const { user } = useContext(AuthContext);
+
+  const showToast = (message, type) => {
+    const toastType = type === "success" ? toast.success : toast.error;
+
+    toastType(message, {
+      position: "top-center",
+      autoClose: type === "error" ? 2000 : 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
 
   // fetch car details
   const [carData, setCarData] = useState();
@@ -41,9 +58,13 @@ const BookingDetails = () => {
 
     try {
       const res = await axios.put(`/bookings/${id}`, approve);
-      alert("Booking Approved");
-      navigate(-1);
-    } catch (err) {}
+      showToast("Booking approved!", "success");
+      setTimeout(async () => {
+        await navigate(-1); // Wait for navigation to complete
+      }, 3000);
+    } catch (err) {
+      showToast("Error to update booking status", "error");
+    }
   };
 
   const handleDecline = async (e) => {
@@ -51,23 +72,46 @@ const BookingDetails = () => {
 
     try {
       const res = await axios.put(`/bookings/${id}`, decline);
-      alert("Booking Declined");
-      navigate(-1);
-    } catch (err) {}
+      showToast("Booking Declined!", "success");
+      setTimeout(async () => {
+        await navigate(-1); // Wait for navigation to complete
+      }, 3000);
+    } catch (err) {
+      showToast("Error to update booking status", "error");
+    }
   };
   const handleFinish = async (e) => {
     e.preventDefault();
 
     try {
       const res = await axios.put(`/bookings/${id}`, finish);
-      alert("Booking Finished");
-      navigate(-1);
-    } catch (err) {}
+      showToast("Booking finished!", "success");
+      setTimeout(async () => {
+        await navigate(-1); // Wait for navigation to complete
+      }, 3000);
+    } catch (err) {
+      showToast("Error to update booking status", "error");
+    }
   };
 
   return (
     <div>
       <Navbar />
+
+      {/* display toast */}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+
       <div className="flex flex-col justify-center items-center md:ml-16 mt-8 mx-4">
         <div className="xxl:w-3/5 md:w-5/6 flex flex-col gap-8 bg-white-color rounded-lg xxl:p-8 p-4">
           <div className="flex gap-2 justify-end">

@@ -2,6 +2,8 @@ import axios from "axios";
 import React from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -13,6 +15,21 @@ const Register = () => {
     isOwner: undefined,
   });
 
+  const showToast = (message, type) => {
+    const toastType = type === "success" ? toast.success : toast.error;
+
+    toastType(message, {
+      position: "top-center",
+      autoClose: type === "error" ? 2000 : 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
+
   const handleChange = (e) => {
     setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
@@ -22,13 +39,31 @@ const Register = () => {
 
     try {
       const res = await axios.post("/auth/register", info);
-      alert("Registration success! You can login now");
-      navigate("/");
-    } catch (err) {}
+      showToast("Registration success! You can login now", "success");
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
+    } catch (err) {
+      showToast("Error in register new user!", "error");
+    }
   };
 
   return (
     <div className="overflow-hidden flex">
+      {/* display toast */}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+
       <div className="container h-screen mx-auto md:flex xl:w-1/3 w-2/3 flex-col justify-center items-center bg-main-color hidden">
         <h1 className=" xxl:text-4xl lg:text-3xl text-2xl text-center text-white-color-alt font-medium lg:mb-12 mb-10">
           New User Registration

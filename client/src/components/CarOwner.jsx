@@ -7,20 +7,52 @@ import { TbGasStation } from "react-icons/tb";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import useFetch from "../hooks/useFetch";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CarOwner = ({ car }) => {
   const { user } = useContext(AuthContext);
+  const showToast = (message, type) => {
+    const toastType = type === "success" ? toast.success : toast.error;
+
+    toastType(message, {
+      position: "top-center",
+      autoClose: type === "error" ? 2000 : 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
 
   const handleDelete = async (e) => {
     try {
       await axios.delete(`/cars/${car._id}/${user._id}`);
-      alert("Car deleted successfully");
+      showToast("Car deleted successfully", "success");
       window.location.reload();
-    } catch (err) {}
+    } catch (err) {
+      showToast("Error in deleting car", "error");
+    }
   };
 
   return (
     <div className="md:flex mb-4 relative">
+      {/* display toast */}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+
       <div className="xl:w-[1200px] md:w-[700px] bg-white-color shadow rounded-md p-4">
         <div className="flex justify-between mb-4">
           <div>

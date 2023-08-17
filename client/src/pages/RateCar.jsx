@@ -5,6 +5,8 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { AuthContext } from "../context/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RateCar = () => {
   const navigate = useNavigate();
@@ -16,6 +18,21 @@ const RateCar = () => {
     profilePic: user.profilePic,
   });
 
+  const showToast = (message, type) => {
+    const toastType = type === "success" ? toast.success : toast.error;
+
+    toastType(message, {
+      position: "top-center",
+      autoClose: type === "error" ? 2000 : 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
+
   const handleChange = (e) => {
     setRating((prev) => ({ ...prev, [e.target.id]: e.target.value }));
   };
@@ -24,13 +41,32 @@ const RateCar = () => {
     e.preventDefault();
     try {
       const res = await axios.post(`/ratings/find/${id}`, rating);
-      alert("Rating added!");
-      navigate("/home");
-    } catch (err) {}
+      showToast("Rating added!", "success");
+      setTimeout(() => {
+        navigate("/home");
+      }, 3000);
+    } catch (err) {
+      showToast("Error in submitting rate!", "error");
+    }
   };
   return (
     <div>
       <Navbar />
+
+      {/* display toast */}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+
       <div className=" w-screen h-screen flex justify-center items-center">
         <div className="xl:w-[700px] md:w-[550px] flex flex-col bg-white-color-alt shadow rounded-md p-8">
           <h3 className="font-semibold text-xl mb-4 text-center">

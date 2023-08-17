@@ -7,6 +7,8 @@ import Navbar from "../components/Navbar";
 import axios from "axios";
 import storage from "../firebase";
 import { AuthContext } from "../context/AuthContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddVehicle = () => {
   const navigate = useNavigate();
@@ -17,6 +19,21 @@ const AddVehicle = () => {
   const [interiorPic, setInteriorPic] = useState("");
   const [carDetails, setCarDetails] = useState({});
   const [uploaded, setUploaded] = useState(0);
+
+  const showToast = (message, type) => {
+    const toastType = type === "success" ? toast.success : toast.error;
+
+    toastType(message, {
+      position: "top-center",
+      autoClose: type === "error" ? 2000 : 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
 
   const handleChange = (e) => {
     setCarDetails((prev) => ({ ...prev, [e.target.id]: e.target.value }));
@@ -48,7 +65,7 @@ const AddVehicle = () => {
             });
             // calculate file uploaded
             setUploaded((prev) => prev + 1);
-            // alert("Picture successfully upload");
+            showToast("Picture successfully upload", "success");
           });
         }
       );
@@ -70,16 +87,34 @@ const AddVehicle = () => {
 
     try {
       const res = await axios.post(`/cars/${user._id}`, carDetails);
-      alert("Car successfully added!");
+      showToast("Car successfully added!", "success");
       dispatch({ type: "ADD_CAR_SUCCESS", payload: res.data });
-      navigate("/dashboard");
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 3000);
     } catch (err) {
       dispatch({ type: "ADD_CAR_FAILURE", payload: err.response.data });
+      showToast("Error in adding new car!", "error");
     }
   };
   return (
     <div className="">
       <Navbar />
+
+      {/* display toast */}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+
       <div className="flex flex-col justify-center items-center">
         <div className=" bg-white-color shadow rounded-lg  p-4 md:ml-20 mt-8 mx-4">
           <form className="">

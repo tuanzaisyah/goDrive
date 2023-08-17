@@ -15,6 +15,8 @@ import axios from "axios";
 import { useState } from "react";
 import CarRatings from "../components/CarRatings";
 import OwnerLink from "../components/OwnerLink";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CarDetails = () => {
   const navigate = useNavigate();
@@ -41,6 +43,21 @@ const CarDetails = () => {
   //   };
   //   fetchOwner();
   // }, [ownerData]);
+
+  const showToast = (message, type) => {
+    const toastType = type === "success" ? toast.success : toast.error;
+
+    toastType(message, {
+      position: "top-center",
+      autoClose: type === "error" ? 2000 : 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
 
   const { date } = useContext(SearchContext);
 
@@ -101,17 +118,36 @@ const CarDetails = () => {
 
     try {
       const res = await axios.post(`/bookings/${data._id}/${user._id}`, input);
-      alert("Booking success!");
+      showToast("Booking success", "success");
       dispatch({ type: "ADD_BOOKING_SUCCESS", payload: res.data });
-      navigate("/upcoming");
+      setTimeout(() => {
+        navigate("/upcoming");
+      }, 3000);
     } catch (err) {
       dispatch({ type: "ADD_BOOKING_FAILURE", payload: err.response.data });
+
+      showToast("Booking error", "error");
     }
   };
 
   return (
     <div>
       <Navbar />
+
+      {/* display toast */}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+
       {loading ? (
         "Loading"
       ) : (

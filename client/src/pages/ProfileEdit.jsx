@@ -5,6 +5,8 @@ import Navbar from "../components/Navbar";
 import { AuthContext } from "../context/AuthContext";
 import { BiImageAdd } from "react-icons/bi";
 import storage from "../firebase.js";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ProfileEdit = () => {
   const navigate = useNavigate();
@@ -19,6 +21,21 @@ const ProfileEdit = () => {
   });
   const [file, setFile] = useState("");
   const [uploaded, setUploaded] = useState(0);
+
+  const showToast = (message, type) => {
+    const toastType = type === "success" ? toast.success : toast.error;
+
+    toastType(message, {
+      position: "top-center",
+      autoClose: type === "error" ? 2000 : 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+    });
+  };
 
   const handleChange = (e) => {
     setInfo((prev) => ({ ...prev, [e.target.id]: e.target.value }));
@@ -50,7 +67,7 @@ const ProfileEdit = () => {
             });
             // calculate file uploaded
             setUploaded((prev) => prev + 1);
-            alert("Picture successfully upload");
+            showToast("Picture successfully upload", "success");
           });
         }
       );
@@ -68,16 +85,34 @@ const ProfileEdit = () => {
 
     try {
       const res = await axios.put("/users/" + user._id, info);
-      alert("Profile successfully updated!");
+      showToast("Profile successfully updated!", "success");
       dispatch({ type: "UPDATE_SUCCESS", payload: res.data });
-      navigate("/profile");
+      setTimeout(() => {
+        navigate("/profile");
+      }, 3000);
     } catch (err) {
       dispatch({ type: "UPDATE_FAILURE", payload: err.response.data });
+      showToast("Error in updating profile!", "error");
     }
   };
   return (
     <div className="overflow-hidden">
       <Navbar />
+
+      {/* display toast */}
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+
       <div className="w-screen lg:h-[calc(100vh-64px)] h-[calc(100vh-48px)]  md:ml-8 flex flex-col justify-center items-center px-4">
         <div className="xl:w-[1000px] md:w-[700px] w-full xl:h-[650px] bg-white-color p-8 rounded-3xl shadow">
           <button

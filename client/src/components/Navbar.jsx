@@ -44,7 +44,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     dispatch({ type: "LOGOUT" });
-    alert("Successfully logout");
+    // alert("Successfully logout");
   };
   return (
     <>
